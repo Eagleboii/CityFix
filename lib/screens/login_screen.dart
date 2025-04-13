@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui';
 import '../providers/theme_provider.dart';
+import '../utils/app_localizations.dart';
 import 'signup_screen.dart';
 import 'issue_screen.dart';
 
@@ -110,6 +112,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
     final size = MediaQuery.of(context).size;
+    final localizations = AppLocalizations.of(context);
     
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
@@ -149,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       child: Column(
                         children: [
                           Text(
-                            'City issues and problems',
+                            localizations.translate('login_title'),
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -166,9 +169,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 color: isDark ? Colors.white : Colors.black,
                               ),
                               children: [
-                                TextSpan(text: 'always in one view — '),
                                 TextSpan(
-                                  text: 'together we improve\nwith CityFix',
+                                  text: '${localizations.translate('login_subtitle')}\n${localizations.translate('login_with_cityfix')}',
                                   style: TextStyle(
                                     color: const Color(0xFF8C61FF),
                                   ),
@@ -187,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       controller: _emailController,
                       style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
-                        labelText: 'Email',
+                        labelText: localizations.translate('email'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
                         filled: true,
                         fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
@@ -208,9 +210,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
-                        }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                            .hasMatch(value)) {
+                        } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                           return 'Please enter a valid email';
                         }
                         return null;
@@ -224,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       controller: _passwordController,
                       style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: localizations.translate('password'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
                         filled: true,
                         fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
@@ -285,8 +285,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Sign In',
+                          : Text(
+                              localizations.translate('sign_in'),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -297,21 +297,30 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     SizedBox(height: 12),
                     
                     // Guest Login Button
-                    TextButton(
+                    OutlinedButton(
                       onPressed: _loginAsGuest,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDark ? Colors.white : Colors.black,
+                        side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 54),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                       child: Text(
-                        'Continue as Guest',
+                        localizations.translate('continue_as_guest'),
                         style: TextStyle(
-                          color: const Color(0xFF8C61FF),
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                     ),
                     
                     SizedBox(height: 24),
                     
-                    // OR Divider
+                    // Additional login options separator
                     Row(
                       children: [
                         Expanded(
@@ -325,8 +334,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           child: Text(
                             'OR',
                             style: TextStyle(
-                              color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
-                              fontSize: 14,
+                              color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
@@ -341,128 +350,189 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     
                     SizedBox(height: 24),
                     
-                    // Social Login Buttons
-                    Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _loginWithApple,
+                    // Google login button
+                    OutlinedButton(
+                      onPressed: _loginWithGoogle,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDark ? Colors.white : Colors.black,
+                        side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 54),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.apple, color: isDark ? Colors.white : Colors.black, size: 24),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Continue with Apple',
-                                  style: TextStyle(
-                                    color: isDark ? Colors.white : Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Google icon would go here (using Icon widget as placeholder)
+                          Icon(
+                            Icons.g_mobiledata,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            localizations.translate('continue_with_google'),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white : Colors.black,
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                     
-                    SizedBox(height: 16),
+                    SizedBox(height: 12),
                     
-                    Container(
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _loginWithGoogle,
+                    // Apple login button
+                    OutlinedButton(
+                      onPressed: _loginWithApple,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDark ? Colors.white : Colors.black,
+                        side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 54),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.g_mobiledata_rounded, color: Colors.red, size: 28),
-                                SizedBox(width: 10),
-                                Text(
-                                  'Continue with Google',
-                                  style: TextStyle(
-                                    color: isDark ? Colors.white : Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.apple,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            localizations.translate('continue_with_apple'),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white : Colors.black,
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                     
                     SizedBox(height: 24),
                     
-                    // Create Account Link
-                    Center(
-                      child: GestureDetector(
-                        onTap: _navigateToSignup,
-                        child: Text(
-                          "Don't have an account? Sign up",
-                          style: TextStyle(
-                            color: const Color(0xFF8C61FF),
-                            fontWeight: FontWeight.w500,
+                    // Sign up text
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: _navigateToSignup,
+                          child: Text(
+                            localizations.translate('dont_have_account'),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: const Color(0xFF8C61FF),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                     
                     SizedBox(height: 20),
                     
-                    // Terms and Conditions
-                    Center(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
+                    // Terms and conditions
+                    Text(
+                      localizations.translate('terms_and_conditions'),
+                      style: TextStyle(
+                        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {},
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            localizations.translate('terms'),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: const Color(0xFF8C61FF),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          ' ${localizations.translate('and')} ',
                           style: TextStyle(
+                            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                             fontSize: 12,
-                            color: isDark ? Colors.grey.shade500 : Colors.grey.shade700,
                           ),
-                          children: [
-                            TextSpan(text: 'By signing in, you accept our '),
-                            TextSpan(
-                              text: 'Terms',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            TextSpan(text: ' and '),
-                            TextSpan(
-                              text: 'Privacy Policy',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            TextSpan(text: '.'),
-                          ],
                         ),
-                      ),
+                        TextButton(
+                          onPressed: () {},
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: Text(
+                            localizations.translate('privacy_policy'),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: const Color(0xFF8C61FF),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     
-                    SizedBox(height: 20),
+                    SizedBox(height: 24),
+                    
+                    // Add animated bubbles
+                    _buildAnimatedBubbles(isDark),
+                    
                   ],
                 ),
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedBubbles(bool isDark) {
+    return Container(
+      height: 100,
+      child: Stack(
+        children: List.generate(10, (index) {
+          final size = 20.0 + (index * 5.0);
+          final left = (index * 30.0) % (MediaQuery.of(context).size.width - size);
+          final top = (index * 20.0) % 100;
+          final opacity = 0.1 + (index % 3) * 0.1;
+          final color = isDark ? Colors.white.withOpacity(opacity) : Colors.purple.withOpacity(opacity);
+          
+          return Positioned(
+            left: left,
+            top: top,
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

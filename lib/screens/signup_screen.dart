@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flag/flag.dart';
+import 'dart:ui';
 import '../providers/theme_provider.dart';
+import '../utils/app_localizations.dart';
 import 'issue_screen.dart';
 
 class CountryCode {
   final String name;
   final String dialCode;
-  final String flag;
+  final FlagsCode flagCode; // Using FlagsCode enum
 
-  CountryCode({required this.name, required this.dialCode, required this.flag});
+  CountryCode({required this.name, required this.dialCode, required this.flagCode});
 }
 
 class SignupScreen extends StatefulWidget {
@@ -31,186 +34,67 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  // List of country codes
+  // List of country codes - using FlagsCode enum
   final List<CountryCode> _countryCodes = [
-    CountryCode(name: 'Afghanistan', dialCode: '+93', flag: '🇦🇫'),
-    CountryCode(name: 'Albania', dialCode: '+355', flag: '🇦🇱'),
-    CountryCode(name: 'Algeria', dialCode: '+213', flag: '🇩🇿'),
-    CountryCode(name: 'Andorra', dialCode: '+376', flag: '🇦🇩'),
-    CountryCode(name: 'Angola', dialCode: '+244', flag: '🇦🇴'),
-    CountryCode(name: 'Argentina', dialCode: '+54', flag: '🇦🇷'),
-    CountryCode(name: 'Armenia', dialCode: '+374', flag: '🇦🇲'),
-    CountryCode(name: 'Australia', dialCode: '+61', flag: '🇦🇺'),
-    CountryCode(name: 'Austria', dialCode: '+43', flag: '🇦🇹'),
-    CountryCode(name: 'Azerbaijan', dialCode: '+994', flag: '🇦🇿'),
-    CountryCode(name: 'Bahamas', dialCode: '+1', flag: '🇧🇸'),
-    CountryCode(name: 'Bahrain', dialCode: '+973', flag: '🇧🇭'),
-    CountryCode(name: 'Bangladesh', dialCode: '+880', flag: '🇧🇩'),
-    CountryCode(name: 'Barbados', dialCode: '+1', flag: '🇧🇧'),
-    CountryCode(name: 'Belarus', dialCode: '+375', flag: '🇧🇾'),
-    CountryCode(name: 'Belgium', dialCode: '+32', flag: '🇧🇪'),
-    CountryCode(name: 'Belize', dialCode: '+501', flag: '🇧🇿'),
-    CountryCode(name: 'Benin', dialCode: '+229', flag: '🇧🇯'),
-    CountryCode(name: 'Bhutan', dialCode: '+975', flag: '🇧🇹'),
-    CountryCode(name: 'Bolivia', dialCode: '+591', flag: '🇧🇴'),
-    CountryCode(name: 'Bosnia', dialCode: '+387', flag: '🇧🇦'),
-    CountryCode(name: 'Botswana', dialCode: '+267', flag: '🇧🇼'),
-    CountryCode(name: 'Brazil', dialCode: '+55', flag: '🇧🇷'),
-    CountryCode(name: 'Brunei', dialCode: '+673', flag: '🇧🇳'),
-    CountryCode(name: 'Bulgaria', dialCode: '+359', flag: '🇧🇬'),
-    CountryCode(name: 'Burkina Faso', dialCode: '+226', flag: '🇧🇫'),
-    CountryCode(name: 'Burundi', dialCode: '+257', flag: '🇧🇮'),
-    CountryCode(name: 'Cambodia', dialCode: '+855', flag: '🇰🇭'),
-    CountryCode(name: 'Cameroon', dialCode: '+237', flag: '🇨🇲'),
-    CountryCode(name: 'Canada', dialCode: '+1', flag: '🇨🇦'),
-    CountryCode(name: 'Cape Verde', dialCode: '+238', flag: '🇨🇻'),
-    CountryCode(name: 'Central African Republic', dialCode: '+236', flag: '🇨🇫'),
-    CountryCode(name: 'Chad', dialCode: '+235', flag: '🇹🇩'),
-    CountryCode(name: 'Chile', dialCode: '+56', flag: '🇨🇱'),
-    CountryCode(name: 'China', dialCode: '+86', flag: '🇨🇳'),
-    CountryCode(name: 'Colombia', dialCode: '+57', flag: '🇨🇴'),
-    CountryCode(name: 'Comoros', dialCode: '+269', flag: '🇰🇲'),
-    CountryCode(name: 'Costa Rica', dialCode: '+506', flag: '🇨🇷'),
-    CountryCode(name: 'Croatia', dialCode: '+385', flag: '🇭🇷'),
-    CountryCode(name: 'Cuba', dialCode: '+53', flag: '🇨🇺'),
-    CountryCode(name: 'Cyprus', dialCode: '+357', flag: '🇨🇾'),
-    CountryCode(name: 'Czech Republic', dialCode: '+420', flag: '🇨🇿'),
-    CountryCode(name: 'Denmark', dialCode: '+45', flag: '🇩🇰'),
-    CountryCode(name: 'Djibouti', dialCode: '+253', flag: '🇩🇯'),
-    CountryCode(name: 'Dominican Republic', dialCode: '+1', flag: '🇩🇴'),
-    CountryCode(name: 'Ecuador', dialCode: '+593', flag: '🇪🇨'),
-    CountryCode(name: 'Egypt', dialCode: '+20', flag: '🇪🇬'),
-    CountryCode(name: 'El Salvador', dialCode: '+503', flag: '🇸🇻'),
-    CountryCode(name: 'Equatorial Guinea', dialCode: '+240', flag: '🇬🇶'),
-    CountryCode(name: 'Eritrea', dialCode: '+291', flag: '🇪🇷'),
-    CountryCode(name: 'Estonia', dialCode: '+372', flag: '🇪🇪'),
-    CountryCode(name: 'Ethiopia', dialCode: '+251', flag: '🇪🇹'),
-    CountryCode(name: 'Fiji', dialCode: '+679', flag: '🇫🇯'),
-    CountryCode(name: 'Finland', dialCode: '+358', flag: '🇫🇮'),
-    CountryCode(name: 'France', dialCode: '+33', flag: '🇫🇷'),
-    CountryCode(name: 'Gabon', dialCode: '+241', flag: '🇬🇦'),
-    CountryCode(name: 'Gambia', dialCode: '+220', flag: '🇬🇲'),
-    CountryCode(name: 'Georgia', dialCode: '+995', flag: '🇬🇪'),
-    CountryCode(name: 'Germany', dialCode: '+49', flag: '🇩🇪'),
-    CountryCode(name: 'Ghana', dialCode: '+233', flag: '🇬🇭'),
-    CountryCode(name: 'Greece', dialCode: '+30', flag: '🇬🇷'),
-    CountryCode(name: 'Grenada', dialCode: '+1', flag: '🇬🇩'),
-    CountryCode(name: 'Guatemala', dialCode: '+502', flag: '🇬🇹'),
-    CountryCode(name: 'Guinea', dialCode: '+224', flag: '🇬🇳'),
-    CountryCode(name: 'Guinea-Bissau', dialCode: '+245', flag: '🇬🇼'),
-    CountryCode(name: 'Guyana', dialCode: '+592', flag: '🇬🇾'),
-    CountryCode(name: 'Haiti', dialCode: '+509', flag: '🇭🇹'),
-    CountryCode(name: 'Honduras', dialCode: '+504', flag: '🇭🇳'),
-    CountryCode(name: 'Hungary', dialCode: '+36', flag: '🇭🇺'),
-    CountryCode(name: 'Iceland', dialCode: '+354', flag: '🇮🇸'),
-    CountryCode(name: 'India', dialCode: '+91', flag: '🇮🇳'),
-    CountryCode(name: 'Indonesia', dialCode: '+62', flag: '🇮🇩'),
-    CountryCode(name: 'Iran', dialCode: '+98', flag: '🇮🇷'),
-    CountryCode(name: 'Iraq', dialCode: '+964', flag: '🇮🇶'),
-    CountryCode(name: 'Ireland', dialCode: '+353', flag: '🇮🇪'),
-    CountryCode(name: 'Israel', dialCode: '+972', flag: '🇮🇱'),
-    CountryCode(name: 'Italy', dialCode: '+39', flag: '🇮🇹'),
-    CountryCode(name: 'Jamaica', dialCode: '+1', flag: '🇯🇲'),
-    CountryCode(name: 'Japan', dialCode: '+81', flag: '🇯🇵'),
-    CountryCode(name: 'Jordan', dialCode: '+962', flag: '🇯🇴'),
-    CountryCode(name: 'Kazakhstan', dialCode: '+7', flag: '🇰🇿'),
-    CountryCode(name: 'Kenya', dialCode: '+254', flag: '🇰🇪'),
-    CountryCode(name: 'Kuwait', dialCode: '+965', flag: '🇰🇼'),
-    CountryCode(name: 'Kyrgyzstan', dialCode: '+996', flag: '🇰🇬'),
-    CountryCode(name: 'Laos', dialCode: '+856', flag: '🇱🇦'),
-    CountryCode(name: 'Latvia', dialCode: '+371', flag: '🇱🇻'),
-    CountryCode(name: 'Lebanon', dialCode: '+961', flag: '🇱🇧'),
-    CountryCode(name: 'Lesotho', dialCode: '+266', flag: '🇱🇸'),
-    CountryCode(name: 'Liberia', dialCode: '+231', flag: '🇱🇷'),
-    CountryCode(name: 'Libya', dialCode: '+218', flag: '🇱🇾'),
-    CountryCode(name: 'Liechtenstein', dialCode: '+423', flag: '🇱🇮'),
-    CountryCode(name: 'Lithuania', dialCode: '+370', flag: '🇱🇹'),
-    CountryCode(name: 'Luxembourg', dialCode: '+352', flag: '🇱🇺'),
-    CountryCode(name: 'Madagascar', dialCode: '+261', flag: '🇲🇬'),
-    CountryCode(name: 'Malawi', dialCode: '+265', flag: '🇲🇼'),
-    CountryCode(name: 'Malaysia', dialCode: '+60', flag: '🇲🇾'),
-    CountryCode(name: 'Maldives', dialCode: '+960', flag: '🇲🇻'),
-    CountryCode(name: 'Mali', dialCode: '+223', flag: '🇲🇱'),
-    CountryCode(name: 'Malta', dialCode: '+356', flag: '🇲🇹'),
-    CountryCode(name: 'Mauritania', dialCode: '+222', flag: '🇲🇷'),
-    CountryCode(name: 'Mauritius', dialCode: '+230', flag: '🇲🇺'),
-    CountryCode(name: 'Mexico', dialCode: '+52', flag: '🇲🇽'),
-    CountryCode(name: 'Moldova', dialCode: '+373', flag: '🇲🇩'),
-    CountryCode(name: 'Monaco', dialCode: '+377', flag: '🇲🇨'),
-    CountryCode(name: 'Mongolia', dialCode: '+976', flag: '🇲🇳'),
-    CountryCode(name: 'Montenegro', dialCode: '+382', flag: '🇲🇪'),
-    CountryCode(name: 'Morocco', dialCode: '+212', flag: '🇲🇦'),
-    CountryCode(name: 'Mozambique', dialCode: '+258', flag: '🇲🇿'),
-    CountryCode(name: 'Myanmar', dialCode: '+95', flag: '🇲🇲'),
-    CountryCode(name: 'Namibia', dialCode: '+264', flag: '🇳🇦'),
-    CountryCode(name: 'Nepal', dialCode: '+977', flag: '🇳🇵'),
-    CountryCode(name: 'Netherlands', dialCode: '+31', flag: '🇳🇱'),
-    CountryCode(name: 'New Zealand', dialCode: '+64', flag: '🇳🇿'),
-    CountryCode(name: 'Nicaragua', dialCode: '+505', flag: '🇳🇮'),
-    CountryCode(name: 'Niger', dialCode: '+227', flag: '🇳🇪'),
-    CountryCode(name: 'Nigeria', dialCode: '+234', flag: '🇳🇬'),
-    CountryCode(name: 'North Korea', dialCode: '+850', flag: '🇰🇵'),
-    CountryCode(name: 'North Macedonia', dialCode: '+389', flag: '🇲🇰'),
-    CountryCode(name: 'Norway', dialCode: '+47', flag: '🇳🇴'),
-    CountryCode(name: 'Oman', dialCode: '+968', flag: '🇴🇲'),
-    CountryCode(name: 'Pakistan', dialCode: '+92', flag: '🇵🇰'),
-    CountryCode(name: 'Palestine', dialCode: '+970', flag: '🇵🇸'),
-    CountryCode(name: 'Panama', dialCode: '+507', flag: '🇵🇦'),
-    CountryCode(name: 'Papua New Guinea', dialCode: '+675', flag: '🇵🇬'),
-    CountryCode(name: 'Paraguay', dialCode: '+595', flag: '🇵🇾'),
-    CountryCode(name: 'Peru', dialCode: '+51', flag: '🇵🇪'),
-    CountryCode(name: 'Philippines', dialCode: '+63', flag: '🇵🇭'),
-    CountryCode(name: 'Poland', dialCode: '+48', flag: '🇵🇱'),
-    CountryCode(name: 'Portugal', dialCode: '+351', flag: '🇵🇹'),
-    CountryCode(name: 'Qatar', dialCode: '+974', flag: '🇶🇦'),
-    CountryCode(name: 'Romania', dialCode: '+40', flag: '🇷🇴'),
-    CountryCode(name: 'Russia', dialCode: '+7', flag: '🇷🇺'),
-    CountryCode(name: 'Rwanda', dialCode: '+250', flag: '🇷🇼'),
-    CountryCode(name: 'Saudi Arabia', dialCode: '+966', flag: '🇸🇦'),
-    CountryCode(name: 'Senegal', dialCode: '+221', flag: '🇸🇳'),
-    CountryCode(name: 'Serbia', dialCode: '+381', flag: '🇷🇸'),
-    CountryCode(name: 'Seychelles', dialCode: '+248', flag: '🇸🇨'),
-    CountryCode(name: 'Sierra Leone', dialCode: '+232', flag: '🇸🇱'),
-    CountryCode(name: 'Singapore', dialCode: '+65', flag: '🇸🇬'),
-    CountryCode(name: 'Slovakia', dialCode: '+421', flag: '🇸🇰'),
-    CountryCode(name: 'Slovenia', dialCode: '+386', flag: '🇸🇮'),
-    CountryCode(name: 'Somalia', dialCode: '+252', flag: '🇸🇴'),
-    CountryCode(name: 'South Africa', dialCode: '+27', flag: '🇿🇦'),
-    CountryCode(name: 'South Korea', dialCode: '+82', flag: '🇰🇷'),
-    CountryCode(name: 'South Sudan', dialCode: '+211', flag: '🇸🇸'),
-    CountryCode(name: 'Spain', dialCode: '+34', flag: '🇪🇸'),
-    CountryCode(name: 'Sri Lanka', dialCode: '+94', flag: '🇱🇰'),
-    CountryCode(name: 'Sudan', dialCode: '+249', flag: '🇸🇩'),
-    CountryCode(name: 'Suriname', dialCode: '+597', flag: '🇸🇷'),
-    CountryCode(name: 'Sweden', dialCode: '+46', flag: '🇸🇪'),
-    CountryCode(name: 'Switzerland', dialCode: '+41', flag: '🇨🇭'),
-    CountryCode(name: 'Syria', dialCode: '+963', flag: '🇸🇾'),
-    CountryCode(name: 'Taiwan', dialCode: '+886', flag: '🇹🇼'),
-    CountryCode(name: 'Tajikistan', dialCode: '+992', flag: '🇹🇯'),
-    CountryCode(name: 'Tanzania', dialCode: '+255', flag: '🇹🇿'),
-    CountryCode(name: 'Thailand', dialCode: '+66', flag: '🇹🇭'),
-    CountryCode(name: 'Togo', dialCode: '+228', flag: '🇹🇬'),
-    CountryCode(name: 'Trinidad and Tobago', dialCode: '+1', flag: '🇹🇹'),
-    CountryCode(name: 'Tunisia', dialCode: '+216', flag: '🇹🇳'),
-    CountryCode(name: 'Turkey', dialCode: '+90', flag: '🇹🇷'),
-    CountryCode(name: 'Turkmenistan', dialCode: '+993', flag: '🇹🇲'),
-    CountryCode(name: 'Uganda', dialCode: '+256', flag: '🇺🇬'),
-    CountryCode(name: 'Ukraine', dialCode: '+380', flag: '🇺🇦'),
-    CountryCode(name: 'United Arab Emirates', dialCode: '+971', flag: '🇦🇪'),
-    CountryCode(name: 'United Kingdom', dialCode: '+44', flag: '🇬🇧'),
-    CountryCode(name: 'United States', dialCode: '+1', flag: '🇺🇸'),
-    CountryCode(name: 'Uruguay', dialCode: '+598', flag: '🇺🇾'),
-    CountryCode(name: 'Uzbekistan', dialCode: '+998', flag: '🇺🇿'),
-    CountryCode(name: 'Vatican City', dialCode: '+39', flag: '🇻🇦'),
-    CountryCode(name: 'Venezuela', dialCode: '+58', flag: '🇻🇪'),
-    CountryCode(name: 'Vietnam', dialCode: '+84', flag: '🇻🇳'),
-    CountryCode(name: 'Yemen', dialCode: '+967', flag: '🇾🇪'),
-    CountryCode(name: 'Zambia', dialCode: '+260', flag: '🇿🇲'),
-    CountryCode(name: 'Zimbabwe', dialCode: '+263', flag: '🇿🇼'),
+    CountryCode(name: 'Afghanistan', dialCode: '+93', flagCode: FlagsCode.AF),
+    CountryCode(name: 'Albania', dialCode: '+355', flagCode: FlagsCode.AL),
+    CountryCode(name: 'Algeria', dialCode: '+213', flagCode: FlagsCode.DZ),
+    CountryCode(name: 'Andorra', dialCode: '+376', flagCode: FlagsCode.AD),
+    CountryCode(name: 'Angola', dialCode: '+244', flagCode: FlagsCode.AO),
+    CountryCode(name: 'Argentina', dialCode: '+54', flagCode: FlagsCode.AR),
+    CountryCode(name: 'Armenia', dialCode: '+374', flagCode: FlagsCode.AM),
+    CountryCode(name: 'Australia', dialCode: '+61', flagCode: FlagsCode.AU),
+    CountryCode(name: 'Austria', dialCode: '+43', flagCode: FlagsCode.AT),
+    CountryCode(name: 'Azerbaijan', dialCode: '+994', flagCode: FlagsCode.AZ),
+    CountryCode(name: 'Bahamas', dialCode: '+1', flagCode: FlagsCode.BS),
+    CountryCode(name: 'Bahrain', dialCode: '+973', flagCode: FlagsCode.BH),
+    CountryCode(name: 'Bangladesh', dialCode: '+880', flagCode: FlagsCode.BD),
+    CountryCode(name: 'Belgium', dialCode: '+32', flagCode: FlagsCode.BE),
+    CountryCode(name: 'Brazil', dialCode: '+55', flagCode: FlagsCode.BR),
+    CountryCode(name: 'Canada', dialCode: '+1', flagCode: FlagsCode.CA),
+    CountryCode(name: 'China', dialCode: '+86', flagCode: FlagsCode.CN),
+    CountryCode(name: 'Colombia', dialCode: '+57', flagCode: FlagsCode.CO),
+    CountryCode(name: 'Egypt', dialCode: '+20', flagCode: FlagsCode.EG),
+    CountryCode(name: 'France', dialCode: '+33', flagCode: FlagsCode.FR),
+    CountryCode(name: 'Germany', dialCode: '+49', flagCode: FlagsCode.DE),
+    CountryCode(name: 'India', dialCode: '+91', flagCode: FlagsCode.IN),
+    CountryCode(name: 'Indonesia', dialCode: '+62', flagCode: FlagsCode.ID),
+    CountryCode(name: 'Iran', dialCode: '+98', flagCode: FlagsCode.IR),
+    CountryCode(name: 'Iraq', dialCode: '+964', flagCode: FlagsCode.IQ),
+    CountryCode(name: 'Italy', dialCode: '+39', flagCode: FlagsCode.IT),
+    CountryCode(name: 'Japan', dialCode: '+81', flagCode: FlagsCode.JP),
+    CountryCode(name: 'Jordan', dialCode: '+962', flagCode: FlagsCode.JO),
+    CountryCode(name: 'Kenya', dialCode: '+254', flagCode: FlagsCode.KE),
+    CountryCode(name: 'Malaysia', dialCode: '+60', flagCode: FlagsCode.MY),
+    CountryCode(name: 'Mexico', dialCode: '+52', flagCode: FlagsCode.MX),
+    CountryCode(name: 'Morocco', dialCode: '+212', flagCode: FlagsCode.MA),
+    CountryCode(name: 'Netherlands', dialCode: '+31', flagCode: FlagsCode.NL),
+    CountryCode(name: 'Nigeria', dialCode: '+234', flagCode: FlagsCode.NG),
+    CountryCode(name: 'Norway', dialCode: '+47', flagCode: FlagsCode.NO),
+    CountryCode(name: 'Pakistan', dialCode: '+92', flagCode: FlagsCode.PK),
+    CountryCode(name: 'Philippines', dialCode: '+63', flagCode: FlagsCode.PH),
+    CountryCode(name: 'Poland', dialCode: '+48', flagCode: FlagsCode.PL),
+    CountryCode(name: 'Portugal', dialCode: '+351', flagCode: FlagsCode.PT),
+    CountryCode(name: 'Qatar', dialCode: '+974', flagCode: FlagsCode.QA),
+    CountryCode(name: 'Russia', dialCode: '+7', flagCode: FlagsCode.RU),
+    CountryCode(name: 'Saudi Arabia', dialCode: '+966', flagCode: FlagsCode.SA),
+    CountryCode(name: 'Singapore', dialCode: '+65', flagCode: FlagsCode.SG),
+    CountryCode(name: 'South Africa', dialCode: '+27', flagCode: FlagsCode.ZA),
+    CountryCode(name: 'South Korea', dialCode: '+82', flagCode: FlagsCode.KR),
+    CountryCode(name: 'Spain', dialCode: '+34', flagCode: FlagsCode.ES),
+    CountryCode(name: 'Sweden', dialCode: '+46', flagCode: FlagsCode.SE),
+    CountryCode(name: 'Switzerland', dialCode: '+41', flagCode: FlagsCode.CH),
+    CountryCode(name: 'Thailand', dialCode: '+66', flagCode: FlagsCode.TH),
+    CountryCode(name: 'Turkey', dialCode: '+90', flagCode: FlagsCode.TR),
+    CountryCode(name: 'Ukraine', dialCode: '+380', flagCode: FlagsCode.UA),
+    CountryCode(name: 'United Arab Emirates', dialCode: '+971', flagCode: FlagsCode.AE),
+    CountryCode(name: 'United Kingdom', dialCode: '+44', flagCode: FlagsCode.GB),
+    CountryCode(name: 'United States', dialCode: '+1', flagCode: FlagsCode.US),
+    CountryCode(name: 'Vietnam', dialCode: '+84', flagCode: FlagsCode.VN),
   ];
   
   // Default selected country code
-  CountryCode _selectedCountryCode = CountryCode(name: 'Morocco', dialCode: '+212', flag: '🇲🇦');
+  CountryCode _selectedCountryCode = CountryCode(name: 'Morocco', dialCode: '+212', flagCode: FlagsCode.MA);
 
   @override
   void initState() {
@@ -294,24 +178,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                 child: ListView.builder(
                   itemCount: _countryCodes.length,
                   itemBuilder: (context, index) {
-                    final countryCode = _countryCodes[index];
-                    return ListTile(
-                      leading: Text(countryCode.flag, style: const TextStyle(fontSize: 24)),
-                      title: Text(
-                        countryCode.name, 
-                        style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                      ),
-                      subtitle: Text(
-                        countryCode.dialCode, 
-                        style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _selectedCountryCode = countryCode;
-                        });
-                        Navigator.pop(context);
-                      },
-                    );
+                    return _buildCountryListTile(_countryCodes[index], isDark);
                   },
                 ),
               ),
@@ -342,7 +209,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
-    final size = MediaQuery.of(context).size;
+    final localizations = AppLocalizations.of(context);
     
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
@@ -351,11 +218,10 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
         elevation: 0,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back_ios,
+            Icons.arrow_back,
             color: isDark ? Colors.white : Colors.black,
-            size: 20,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: SafeArea(
@@ -367,53 +233,53 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Centered Title
-                    SizedBox(height: size.height * 0.02),
-                    Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            'Register to report',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
+                    // Registration Title
+                    Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: Text(
+                        localizations.translate('register_title'),
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: localizations.translate('register_subtitle'),
                               style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : Colors.black,
+                                color: const Color(0xFF8C61FF),
                               ),
-                              children: [
-                                TextSpan(text: 'city issues — '),
-                                TextSpan(
-                                  text: 'together we improve\nwith CityFix',
-                                  style: TextStyle(
-                                    color: const Color(0xFF8C61FF),
-                                  ),
-                                ),
-                              ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     
-                    SizedBox(height: size.height * 0.04),
+                    const SizedBox(height: 40),
                     
-                    // Full Name
+                    // Full Name Field
                     TextFormField(
                       controller: _fullNameController,
                       style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
-                        labelText: 'Full Name',
+                        labelText: localizations.translate('full_name'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
                         filled: true,
                         fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
@@ -432,19 +298,20 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Please enter your full name';
                         }
                         return null;
                       },
                     ),
+                    
                     const SizedBox(height: 16),
                     
-                    // Email
+                    // Email Field
                     TextFormField(
                       controller: _emailController,
                       style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
-                        labelText: 'Email',
+                        labelText: localizations.translate('email'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
                         filled: true,
                         fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
@@ -465,61 +332,32 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
-                        }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                            .hasMatch(value)) {
+                        } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                           return 'Please enter a valid email';
                         }
                         return null;
                       },
                     ),
+                    
                     const SizedBox(height: 16),
                     
-                    // Phone number with country code
+                    // Phone Number Field with Country Code
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Country code selector
-                        InkWell(
-                          onTap: _showCountryCodePicker,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            height: 58,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                              color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Text(_selectedCountryCode.flag, style: const TextStyle(fontSize: 24)),
-                                const SizedBox(width: 4),
-                                Text(
-                                  _selectedCountryCode.dialCode, 
-                                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                                ),
-                                Icon(
-                                  Icons.arrow_drop_down, 
-                                  size: 20, 
-                                  color: isDark ? Colors.white : Colors.black,
-                                ),
-                              ],
-                            ),
-                          ),
+                        // Country code dropdown
+                        Container(
+                          width: 110,
+                          child: _buildCountryCodeDropdown(isDark),
                         ),
-                        const SizedBox(width: 8),
-                        
+                        SizedBox(width: 12),
                         // Phone number field
                         Expanded(
                           child: TextFormField(
                             controller: _phoneController,
                             style: TextStyle(color: isDark ? Colors.white : Colors.black),
                             decoration: InputDecoration(
-                              labelText: 'Phone Number',
+                              labelText: localizations.translate('phone_number'),
                               labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
                               filled: true,
                               fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
@@ -537,19 +375,25 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                               ),
                             ),
                             keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your phone number';
+                              }
+                              return null;
+                            },
                           ),
                         ),
                       ],
                     ),
+                    
                     const SizedBox(height: 16),
                     
-                    // Password
+                    // Password Field
                     TextFormField(
                       controller: _passwordController,
                       style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                      obscureText: _isObscurePassword,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: localizations.translate('password'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
                         filled: true,
                         fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
@@ -567,9 +411,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isObscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                            _isObscurePassword ? Icons.visibility : Icons.visibility_off,
                             color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
                           ),
                           onPressed: () {
@@ -579,25 +421,25 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                           },
                         ),
                       ),
+                      obscureText: _isObscurePassword,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
-                        }
-                        if (value.length < 6) {
+                        } else if (value.length < 6) {
                           return 'Password must be at least 6 characters';
                         }
                         return null;
                       },
                     ),
+                    
                     const SizedBox(height: 16),
                     
-                    // Confirm Password
+                    // Confirm Password Field
                     TextFormField(
                       controller: _confirmPasswordController,
                       style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                      obscureText: _isObscureConfirmPassword,
                       decoration: InputDecoration(
-                        labelText: 'Confirm Password',
+                        labelText: localizations.translate('confirm_password'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
                         filled: true,
                         fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
@@ -615,9 +457,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isObscureConfirmPassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                            _isObscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
                             color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
                           ),
                           onPressed: () {
@@ -627,17 +467,18 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                           },
                         ),
                       ),
+                      obscureText: _isObscureConfirmPassword,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please confirm your password';
-                        }
-                        if (value != _passwordController.text) {
+                        } else if (value != _passwordController.text) {
                           return 'Passwords do not match';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 24),
+                    
+                    const SizedBox(height: 32),
                     
                     // Sign Up Button
                     ElevatedButton(
@@ -661,60 +502,32 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Sign Up',
-                              style: TextStyle(
+                          : Text(
+                              localizations.translate('sign_up'),
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                     ),
                     
-                    // Terms and Conditions
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                    
+                    // Login Link
                     Center(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(
+                          localizations.translate('already_have_account'),
                           style: TextStyle(
-                            fontSize: 12,
-                            color: isDark ? Colors.grey.shade500 : Colors.grey.shade700,
+                            fontSize: 14,
+                            color: const Color(0xFF8C61FF),
+                            fontWeight: FontWeight.bold,
                           ),
-                          children: [
-                            TextSpan(text: 'By signing up, you accept our '),
-                            TextSpan(
-                              text: 'Terms',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            TextSpan(text: ' and '),
-                            TextSpan(
-                              text: 'Privacy Policy',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            TextSpan(text: '.'),
-                          ],
                         ),
                       ),
                     ),
                     
-                    // Sign in link
-                    SizedBox(height: 20),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Text(
-                          'Already have an account? Sign In',
-                          style: TextStyle(
-                            color: const Color(0xFF8C61FF),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -723,6 +536,83 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCountryCodeDropdown(bool isDark) {
+    return InkWell(
+      onTap: _showCountryCodePicker,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 58,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 24,
+              height: 18,
+              child: Flag.fromCode(
+                _selectedCountryCode.flagCode,
+                fit: BoxFit.cover,
+                borderRadius: 2,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                _selectedCountryCode.dialCode,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 13,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Icon(
+              Icons.arrow_drop_down,
+              size: 16,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCountryListTile(CountryCode countryCode, bool isDark) {
+    return ListTile(
+      leading: SizedBox(
+        width: 32,
+        height: 20,
+        child: Flag.fromCode(
+          countryCode.flagCode,
+          fit: BoxFit.cover,
+          borderRadius: 2,
+        ),
+      ),
+      title: Text(
+        countryCode.name, 
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
+      ),
+      subtitle: Text(
+        countryCode.dialCode, 
+        style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+      ),
+      onTap: () {
+        setState(() {
+          _selectedCountryCode = countryCode;
+        });
+        Navigator.pop(context);
+      },
     );
   }
 } 

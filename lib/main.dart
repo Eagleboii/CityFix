@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => IssueProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
-      child: Consumer2<ThemeProvider, AuthProvider>(
-        builder: (context, themeProvider, authProvider, child) {
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
           return MaterialApp(
             title: 'CityFix',
             debugShowCheckedModeBanner: false,
@@ -42,7 +42,24 @@ class MyApp extends StatelessWidget {
               Locale('fr', ''), // French
               Locale('es', ''), // Spanish
               Locale('de', ''), // German
+              Locale('ar', ''), // Arabic
             ],
+            // Let the system detect language automatically
+            localeResolutionCallback: (locale, supportedLocales) {
+              // If no locale is provided, use English
+              if (locale == null) {
+                return const Locale('en', '');
+              }
+              
+              // Check if the device locale is supported
+              for (var supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale.languageCode) {
+                  return supportedLocale;
+                }
+              }
+              // If the locale of the device is not supported, use English
+              return const Locale('en', '');
+            },
             home: const LoginScreen(),
           );
         },

@@ -19,7 +19,13 @@ class IssueProvider extends ChangeNotifier {
     return _issues.where((issue) => issue.category == category).toList();
   }
   
-  void addIssue(String title, {Priority priority = Priority.medium, String? location, String? imageUrl, String? category}) {
+  void addIssue({
+    required String title,
+    Priority priority = Priority.medium,
+    String? location,
+    String? imageUrl,
+    String? category,
+  }) {
     final issue = Issue(
       id: _uuid.v4(),
       title: title,
@@ -65,18 +71,24 @@ class IssueProvider extends ChangeNotifier {
   // For demonstration purposes, add sample data
   void addSampleData() {
     if (_issues.isEmpty) {
-      addIssue('Large pothole on Main Street', 
+      addIssue(
+        title: 'Large pothole on Main Street', 
         priority: Priority.high, 
         location: '123 Main St',
-        category: 'Pothole');
-      addIssue('Inappropriate graffiti on park wall', 
+        category: 'Pothole'
+      );
+      addIssue(
+        title: 'Inappropriate graffiti on park wall', 
         priority: Priority.medium,
         location: 'Central Park, West Entrance',
-        category: 'Graffiti');
-      addIssue('Broken street light', 
+        category: 'Graffiti'
+      );
+      addIssue(
+        title: 'Broken street light', 
         priority: Priority.low,
         location: 'Corner of 5th and Oak',
-        category: 'Street light');
+        category: 'Street light'
+      );
     }
   }
 } 

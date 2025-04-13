@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show SynchronousFuture;
 
 class AppLocalizations {
   final Locale locale;
@@ -19,16 +20,34 @@ class AppLocalizations {
       _AppLocalizationsDelegate();
 
   Future<bool> load() async {
-    // Load the language JSON file from the "lang" folder
-    String jsonString =
-        await rootBundle.loadString('assets/lang/${locale.languageCode}.json');
-    Map<String, dynamic> jsonMap = json.decode(jsonString);
+    try {
+      // Load the language JSON file from the "lang" folder
+      String jsonString =
+          await rootBundle.loadString('assets/lang/${locale.languageCode}.json');
+      Map<String, dynamic> jsonMap = json.decode(jsonString);
 
-    _localizedStrings = jsonMap.map((key, value) {
-      return MapEntry(key, value.toString());
-    });
+      _localizedStrings = jsonMap.map((key, value) {
+        return MapEntry(key, value.toString());
+      });
+      
+      return true;
+    } catch (e) {
+      // If the language file is not found, use English as fallback
+      print('Error loading language file: $e');
+      try {
+        String jsonString = await rootBundle.loadString('assets/lang/en.json');
+        Map<String, dynamic> jsonMap = json.decode(jsonString);
 
-    return true;
+        _localizedStrings = jsonMap.map((key, value) {
+          return MapEntry(key, value.toString());
+        });
+      } catch (e) {
+        print('Error loading fallback language file: $e');
+        // If even the fallback fails, use an empty map
+        _localizedStrings = {};
+      }
+      return false;
+    }
   }
 
   // This method will be called from every widget which needs a localized text
@@ -45,7 +64,7 @@ class _AppLocalizationsDelegate
   @override
   bool isSupported(Locale locale) {
     // Include all of your supported language codes here
-    return ['en', 'fr', 'es', 'de'].contains(locale.languageCode);
+    return ['en', 'fr', 'es', 'de', 'ar'].contains(locale.languageCode);
   }
 
   @override
