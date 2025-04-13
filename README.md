@@ -1,40 +1,45 @@
-# CityFix App
+# CityFix
 
-A cross-platform mobile application built with Flutter for iOS and Android that helps citizens report and track urban issues.
+A Flutter mobile application for reporting city issues and problems directly to municipal authorities. Users can report potholes, broken street lights, graffiti, and other urban issues to help make the city a better place.
 
 ## Features
 
-- User authentication (login/signup)
-- Task management system
-- Light and dark theme support
-- Cross-platform compatibility (iOS and Android)
+- **User Authentication**: Sign in, sign up or use as a guest
+- **Dark/Light Mode**: Toggle between dark and light themes
+- **Multilingual Support**: Automatically adapts to the device language
+- **Report Issues**: Submit problems with location, category, and priority
+- **Track Issues**: Monitor the status of your reported problems
+- **Minimalist Design**: Modern, clean UI with animations
+
+## Technologies Used
+
+- Flutter
+- Provider for State Management
+- Material Design 3
+- Custom Animations
+- Internationalization (i18n) support
 
 ## Screenshots
 
-(Add screenshots of your app here)
+[Screenshots will be added soon]
 
 ## Getting Started
 
-### Prerequisites
+1. Clone the repository:
+```
+git clone https://github.com/Eagleboii/CityFix.git
+```
 
-- Flutter SDK installed (see [Flutter Installation Guide](https://docs.flutter.dev/get-started/install))
-- Android Studio / Xcode (for running on emulators/simulators)
+2. Install dependencies:
+```
+flutter pub get
+```
 
-### Installation
+3. Run the app:
+```
+flutter run
+```
 
-1. Clone this repository
-2. Navigate to the project directory
-3. Run `flutter pub get` to install dependencies
-4. Connect a device or start an emulator
-5. Run the app with `flutter run`
+## License
 
-## Development
-
-This project is a Flutter application that includes:
-
-- Provider for state management
-- Shared Preferences for theme persistence
-- Custom UI components
-- Form validation
-
-For more information on Flutter development, check out the [Flutter documentation](https://docs.flutter.dev/).
+This project is licensed under the MIT License.
