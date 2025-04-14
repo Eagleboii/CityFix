@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>531185820942-prnub32tsb9f7cqnuch9rkjj7anigqlu.apps.googleusercontent.com</string>
+	<string>531185820942-iefr65go4pnddmlpge45mmvvgdg5h5lo.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.531185820942-prnub32tsb9f7cqnuch9rkjj7anigqlu</string>
+	<string>com.googleusercontent.apps.531185820942-iefr65go4pnddmlpge45mmvvgdg5h5lo</string>
 	<key>API_KEY</key>
 	<string>AIzaSyD0pdTTQsGftwuhdG_qjyeVvrGn2EjdgwA</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.potholePatrol</string>
+	<string>cityfix</string>
 	<key>PROJECT_ID</key>
 	<string>cityfix-5a359</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:531185820942:ios:14e181696fff295a6e235f</string>
+	<string>1:531185820942:ios:daab08b48a879daf6e235f</string>
 </dict>
 </plist>

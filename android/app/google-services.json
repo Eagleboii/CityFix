@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:531185820942:android:a12fd63f450291d26e235f",
+        "mobilesdk_app_id": "1:531185820942:android:0c74c52f2cccaa186e235f",
         "android_client_info": {
-          "package_name": "com.example.pothole_patrol"
+          "package_name": "com.example.my_flutter_app"
         }
       },
       "oauth_client": [
