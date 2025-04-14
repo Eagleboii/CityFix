@@ -1,45 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthProvider extends ChangeNotifier {
-  bool _isLoggedIn = false;
-  bool get isLoggedIn => _isLoggedIn;
-  
-  String? _currentUser;
-  String? get currentUser => _currentUser;
-  
-  Future<bool> login(String email, String password) async {
-    // In a real app, authenticate with backend
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // Simulate successful login
-    _isLoggedIn = true;
-    _currentUser = email;
-    notifyListeners();
-    return true;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  AuthProvider() {
+    _auth.authStateChanges().listen((User? user) {
+      print(user);
+      notifyListeners();
+    });
   }
-  
-  Future<bool> loginAsGuest() async {
-    // Skip authentication
-    _isLoggedIn = true;
-    _currentUser = 'Guest';
-    notifyListeners();
-    return true;
+
+  User? getCurrentUser() {
+    return _auth.currentUser;
   }
-  
-  Future<bool> signup(String name, String email, String password) async {
-    // In a real app, register with backend
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // Simulate successful signup and auto-login
-    _isLoggedIn = true;
-    _currentUser = email;
-    notifyListeners();
-    return true;
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        print('Google Sign In cancelled by user');
+        return;
+      }
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await _auth.signInWithCredential(credential);
+    } catch (e) {
+      print('Error signing in with Google: $e');
+    }
   }
-  
-  void logout() {
-    _isLoggedIn = false;
-    _currentUser = null;
-    notifyListeners();
+
+  Future<void> signInWithApple() async {
+    try {
+        final AuthorizationCredentialAppleID appleCredential =
+            await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
+        final OAuthCredential credential = OAuthProvider('apple.com').credential(
+          idToken: appleCredential.identityToken,
+          accessToken: appleCredential.authorizationCode,
+        );
+
+      if(kIsWeb){
+          
+      );
+
+      await _auth.signInWithCredential(credential);
+    } catch (e) {
+      print('Error signing in with Apple: $e');
+    }
+  }
+
+  Future<void> signInAsGuest() async {
+    try {
+      await _auth.signInAnonymously();
+    } catch (e) {
+      print('Error signing in as guest: $e');
+    }
+  }
+
+  Future<void> signUpWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      } else {
+        print('Error signing up: $e');
+      }
+    } catch (e) {
+      print('Error signing up: $e');
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await _auth.signOut();
+      await _googleSignIn.signOut();
+    } catch (e) {
+      print('Error signing out: $e');
+    }
   }
 } 

@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -7,9 +9,13 @@ import 'providers/theme_provider.dart';
 import 'providers/issue_provider.dart';
 import 'providers/auth_provider.dart';
 import 'utils/app_localizations.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
   runApp(const MyApp());
 }
 
@@ -50,7 +56,7 @@ class MyApp extends StatelessWidget {
               if (locale == null) {
                 return const Locale('en', '');
               }
-              
+
               // Check if the device locale is supported
               for (var supportedLocale in supportedLocales) {
                 if (supportedLocale.languageCode == locale.languageCode) {

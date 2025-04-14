@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import 'package:flag/flag.dart';
 import 'dart:ui';
 import '../providers/theme_provider.dart';
+
 import '../utils/app_localizations.dart';
 import 'issue_screen.dart';
 
@@ -196,12 +198,22 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
       });
       
       // In a real app, you would register with a backend service
-      // Simulate network delay
-      Future.delayed(const Duration(seconds: 1), () {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const IssueScreen()),
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    
+      try {
+        await authProvider.signUpWithEmailAndPassword(
+          _fullNameController.text,
+          _emailController.text,
+          _passwordController.text,
         );
-      });
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const IssueScreen()),
+          );
+      } catch (e) {
+          print('Sign up failed: $e');
+      } finally {
+         setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -272,12 +284,11 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                       ),
                     ),
                     
-                    const SizedBox(height: 40),
+                  const SizedBox(height: 40),
                     
                     // Full Name Field
                     TextFormField(
                       controller: _fullNameController,
-                      style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
                         labelText: localizations.translate('full_name'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
@@ -309,7 +320,6 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                     // Email Field
                     TextFormField(
                       controller: _emailController,
-                      style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
                         labelText: localizations.translate('email'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
@@ -355,7 +365,6 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                         Expanded(
                           child: TextFormField(
                             controller: _phoneController,
-                            style: TextStyle(color: isDark ? Colors.white : Colors.black),
                             decoration: InputDecoration(
                               labelText: localizations.translate('phone_number'),
                               labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
@@ -391,7 +400,6 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                     // Password Field
                     TextFormField(
                       controller: _passwordController,
-                      style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
                         labelText: localizations.translate('password'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
@@ -437,7 +445,6 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                     // Confirm Password Field
                     TextFormField(
                       controller: _confirmPasswordController,
-                      style: TextStyle(color: isDark ? Colors.white : Colors.black),
                       decoration: InputDecoration(
                         labelText: localizations.translate('confirm_password'),
                         labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
@@ -481,35 +488,39 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                     const SizedBox(height: 32),
                     
                     // Sign Up Button
-                    ElevatedButton(
-                      onPressed: _isLoading ? null : _signup,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8C61FF),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        minimumSize: const Size(double.infinity, 54),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : Text(
-                              localizations.translate('sign_up'),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    Consumer<AuthProvider>(
+                       builder: (context, authProvider, _) {
+                        return ElevatedButton(
+                          onPressed: _isLoading ? null : _signup,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF8C61FF),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 54),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                    ),
+                            elevation: 0,
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.0,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : Text(
+                                  localizations.translate('sign_up'),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                       }
+                      ),
                     
                     const SizedBox(height: 24),
                     

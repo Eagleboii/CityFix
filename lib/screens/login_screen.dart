@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
+import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../utils/app_localizations.dart';
 import 'signup_screen.dart';
+
 import 'issue_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -48,14 +50,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.dispose();
   }
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
+ void _login(AuthProvider authProvider) async {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
       
-      // In a real app, you would authenticate with a backend service
-      Future.delayed(const Duration(seconds: 1), () {
+      try{
+         await authProvider.signInWithEmailAndPassword(_emailController.text, _passwordController.text);
+        _navigateToIssueScreen();
+      }finally {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const IssueScreen()),
         );
@@ -63,25 +67,19 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     }
   }
 
-  void _loginAsGuest() {
-    // Skip authentication and login as guest
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const IssueScreen()),
-    );
+  void _loginAsGuest(AuthProvider authProvider) async {
+    await authProvider.signInAsGuest();
+    _navigateToIssueScreen();
   }
 
-  void _loginWithGoogle() {
-    // In a real app, implement Google Sign-In authentication
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const IssueScreen()),
-    );
+  void _loginWithGoogle(AuthProvider authProvider) async {
+    await authProvider.signInWithGoogle();
+    _navigateToIssueScreen();
   }
 
-  void _loginWithApple() {
-    // In a real app, implement Apple Sign-In authentication
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const IssueScreen()),
-    );
+  void _loginWithApple(AuthProvider authProvider) async {
+    await authProvider.signInWithApple();
+    _navigateToIssueScreen();
   }
 
   void _navigateToSignup() {
@@ -104,6 +102,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         },
         transitionDuration: const Duration(milliseconds: 300),
       ),
+    );
+  }
+
+    void _navigateToIssueScreen() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const IssueScreen()),
     );
   }
 
@@ -137,373 +141,338 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ],
       ),
       body: SafeArea(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // App Title and Description
-                    SizedBox(height: size.height * 0.04),
-                    Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            localizations.translate('login_title'),
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: '${localizations.translate('login_subtitle')}\n${localizations.translate('login_with_cityfix')}',
-                                  style: TextStyle(
-                                    color: const Color(0xFF8C61FF),
-                                  ),
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            return FadeTransition(
+              opacity: _fadeAnimation,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        // App Title and Description
+                        SizedBox(height: size.height * 0.04),
+                        Center(
+                          child: Column(
+                            children: [
+                              Text(
+                                localizations.translate('login_title'),
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? Colors.white : Colors.black,
                                 ),
-                              ],
+                                textAlign: TextAlign.center,
+                              ),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark ? Colors.white : Colors.black,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: '${localizations.translate('login_subtitle')} ',
+                                      style: TextStyle(
+                                        color: const Color(0xFF8C61FF),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        SizedBox(height: size.height * 0.06),
+                        
+                        // Email field
+                        TextFormField(
+                          controller: _emailController,
+                          style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                          decoration: InputDecoration(
+                            labelText: localizations.translate('email'),
+                            labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
+                            filled: true,
+                            fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: const Color(0xFF8C61FF), width: 1),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    
-                    SizedBox(height: size.height * 0.06),
-                    
-                    // Email field
-                    TextFormField(
-                      controller: _emailController,
-                      style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                      decoration: InputDecoration(
-                        labelText: localizations.translate('email'),
-                        labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
-                        filled: true,
-                        fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: const Color(0xFF8C61FF), width: 1),
-                        ),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    
-                    SizedBox(height: 16),
-                    
-                    // Password field
-                    TextFormField(
-                      controller: _passwordController,
-                      style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                      decoration: InputDecoration(
-                        labelText: localizations.translate('password'),
-                        labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
-                        filled: true,
-                        fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: const Color(0xFF8C61FF), width: 1),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isObscure ? Icons.visibility : Icons.visibility_off,
-                            color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isObscure = !_isObscure;
-                            });
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
                           },
                         ),
-                      ),
-                      obscureText: _isObscure,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                    
-                    SizedBox(height: 20),
-                    
-                    // Login Button
-                    ElevatedButton(
-                      onPressed: _isLoading ? null : _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8C61FF),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        minimumSize: const Size(double.infinity, 54),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        
+                        SizedBox(height: 16),
+                        
+                        // Password field
+                        TextFormField(
+                          controller: _passwordController,
+                          style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                          decoration: InputDecoration(
+                            labelText: localizations.translate('password'),
+                            labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
+                            filled: true,
+                            fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: const Color(0xFF8C61FF), width: 1),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure ? Icons.visibility : Icons.visibility_off,
+                                color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
                               ),
-                            )
-                          : Text(
-                              localizations.translate('sign_in'),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                            ),
+                          ),
+                          obscureText: _isObscure,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                        ),
+                        
+                        SizedBox(height: 20),
+                        
+                        // Login Button
+                        ElevatedButton(
+                          onPressed: _isLoading ? null : () => _login(authProvider),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF8C61FF),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 54),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.0,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : Text(
+                                  localizations.translate('sign_in'),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                        
+                        SizedBox(height: 12),
+                         ElevatedButton(
+
+                            onPressed: () => _loginAsGuest(authProvider),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: isDark ? Colors.white : Colors.black,
+                              backgroundColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              minimumSize: const Size(double.infinity, 54),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                    ),
-                    
-                    SizedBox(height: 12),
-                    
-                    // Guest Login Button
-                    OutlinedButton(
-                      onPressed: _loginAsGuest,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? Colors.white : Colors.black,
-                        side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        minimumSize: const Size(double.infinity, 54),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        localizations.translate('continue_as_guest'),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ),
-                    
-                    SizedBox(height: 24),
-                    
-                    // Additional login options separator
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                            thickness: 1,
+                            child: Text('Sign in as Guest', style: TextStyle(fontWeight: FontWeight.bold)),
+
                           ),
+
+                          
+                        
+                        SizedBox(height: 24),
+                        
+                        // Additional login options separator
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                                thickness: 1,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                'OR',
+                                style: TextStyle(
+                                  color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                                thickness: 1,
+                              ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'OR',
-                            style: TextStyle(
-                              color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
-                              fontWeight: FontWeight.w500,
+                        
+                        SizedBox(height: 24),
+                        
+                        // Google login button
+                       ElevatedButton(
+                          onPressed: () => _loginWithGoogle(authProvider),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: isDark ? Colors.white : Colors.black,
+                            backgroundColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 54),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
+                          child: Text('Sign in with Google', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
-                        Expanded(
-                          child: Divider(
-                            color: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                            thickness: 1,
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    SizedBox(height: 24),
-                    
-                    // Google login button
-                    OutlinedButton(
-                      onPressed: _loginWithGoogle,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? Colors.white : Colors.black,
-                        side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        minimumSize: const Size(double.infinity, 54),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Google icon would go here (using Icon widget as placeholder)
-                          Icon(
-                            Icons.g_mobiledata,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                          SizedBox(width: 12),
-                          Text(
-                            localizations.translate('continue_with_google'),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : Colors.black,
+                        
+                        SizedBox(height: 12),
+                        
+                        // Apple login button
+                        ElevatedButton(
+                          onPressed: () => _loginWithApple(authProvider),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: isDark ? Colors.white : Colors.black,
+                            backgroundColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 54),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    
-                    SizedBox(height: 12),
-                    
-                    // Apple login button
-                    OutlinedButton(
-                      onPressed: _loginWithApple,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? Colors.white : Colors.black,
-                        side: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        minimumSize: const Size(double.infinity, 54),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          child: Text('Sign in with Apple', style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.apple,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                          SizedBox(width: 12),
-                          Text(
-                            localizations.translate('continue_with_apple'),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : Colors.black,
+                        
+                        SizedBox(height: 24),
+                        
+                        // Sign up text
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: _navigateToSignup,
+                              child: Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: const Color(0xFF8C61FF),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    SizedBox(height: 24),
-                    
-                    // Sign up text
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: _navigateToSignup,
-                          child: Text(
-                            localizations.translate('dont_have_account'),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: const Color(0xFF8C61FF),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                    
-                    SizedBox(height: 20),
-                    
-                    // Terms and conditions
-                    Text(
-                      localizations.translate('terms_and_conditions'),
-                      style: TextStyle(
-                        color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                        fontSize: 12,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            localizations.translate('terms'),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: const Color(0xFF8C61FF),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        
+                        SizedBox(height: 20),
+                        
+                        // Terms and conditions
                         Text(
-                          ' ${localizations.translate('and')} ',
+                          localizations.translate('terms_and_conditions'),
                           style: TextStyle(
                             color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                            style: TextStyle(
                             fontSize: 12,
                           ),
+                          textAlign: TextAlign.center,
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            localizations.translate('privacy_policy'),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: const Color(0xFF8C61FF),
-                              fontWeight: FontWeight.bold,
+                        
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: () {},
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                localizations.translate('terms'),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: const Color(0xFF8C61FF),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
+                            Text(
+                              ' ${localizations.translate('and')} ',
+                              style: TextStyle(
+                                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {},
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                localizations.translate('privacy_policy'),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: const Color(0xFF8C61FF),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
+                        
+                        SizedBox(height: 24),
+                        
+                        // Add animated bubbles
+                        _buildAnimatedBubbles(isDark),
+                        
                       ],
                     ),
-                    
-                    SizedBox(height: 24),
-                    
-                    // Add animated bubbles
-                    _buildAnimatedBubbles(isDark),
-                    
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

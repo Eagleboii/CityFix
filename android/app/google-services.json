@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "531185820942",
+    "project_id": "cityfix-5a359",
+    "storage_bucket": "cityfix-5a359.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:531185820942:android:a12fd63f450291d26e235f",
+        "android_client_info": {
+          "package_name": "com.example.pothole_patrol"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "531185820942-fdvkn6l3j47ee5c2hrtnrkeu4r51sta3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5o65BwIbaOvXftGvu219IQlwMxpdAXGc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "531185820942-fdvkn6l3j47ee5c2hrtnrkeu4r51sta3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "531185820942-prnub32tsb9f7cqnuch9rkjj7anigqlu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.potholePatrol"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
