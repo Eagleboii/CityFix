@@ -1,8 +1,8 @@
 {
   "app_name": "CityFix",
-  "login_title": "Problèmes urbains",
+  "login_title": "CityFix",
   "login_subtitle": "améliorons ensemble",
-  "login_with_cityfix": "avec CityFix",
+  "login_with_cityfix": "",
   "email": "E-mail",
   "password": "Mot de passe",
   "sign_in": "Se connecter",
